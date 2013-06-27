@@ -1342,6 +1342,8 @@ NSMutableDictionary *bindingsDict = nil;
 
 - (void)insertSpace:(id)sender {
 	NSInteger behavior = [[NSUserDefaults standardUserDefaults] integerForKey:@"QSSearchSpaceBarBehavior"];
+    QSBasicObject * newSelectedObject = [super objectValue];
+
 	switch(behavior) {
 		case 1: //Normal
 			[self insertText:@" "];
@@ -1367,6 +1369,29 @@ NSMutableDictionary *bindingsDict = nil;
         case 6: // Show Quicklook window
             [self togglePreviewPanel:nil];
 			break;
+
+        case 7:
+            if ([newSelectedObject hasChildren] && ![newSelectedObject containsType:QSURLType])
+            {
+                if ([[NSApp currentEvent] modifierFlags] & NSShiftKeyMask)
+                    [self moveLeft:sender];
+                else
+                    [self moveRight:sender];
+            }
+            else if ([self canQuicklookCurrentObject])
+            {
+                [self togglePreviewPanel:nil];
+            }
+            else if ([newSelectedObject containsType:QSSearchURLType])
+            {
+                [self shortCircuit:sender];
+            }
+            else
+            {
+              [self insertTab:nil];
+            }
+
+            break;
 	}
 }
 
